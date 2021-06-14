@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include ('./../theme/html/head'); %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"
+        integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg=="
+        crossorigin="anonymous"></script>
+    <script src='https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js'></script>
+    
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
+        <style>
+            .my-customsw::after {
+                display: none;
+            }
+        </style>
+</head>
+
+<body class=" sidebar-mini layout-fixed text-sm sidebar-collapse">
+    <div class="wrapper">
+
+        <!-- Navbar -->
+        <%- include ('./../theme/html/navbar'); %>
+            <!-- /.navbar -->
+
+            <!-- Main Sidebar Container -->
+            <%- include ('./../theme/html/sidebar'); %>
+
+                <!-- Content Wrapper. Contains page content -->
+            <div class="container">
+                            <section class="content">
+                                <div class="container-fluid">
+                                    <!-- Search & Filter -->
+                                    
+                                    <!-- List -->
+                                    <div class="card card-info card-outline">
+                                        <div class="card-header">
+                                            <h4 class="card-title">List temp-humid log file</h4>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                                                    title="Collapse">
+                                                    <i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Control -->
+                            
+                                            <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                                                
+                                                
+                                                
+                                            </div>
+                                            <!-- List Content -->
+                                            <form action="" method="post" class="table-responsive" id="form-table">
+                                                <table class="table table-bordered table-hover text-nowrap btn-table mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center"><a href="javascript:sortList('name', 'desc')">Name </a></th>
+                                                            <th class="text-center">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% files.forEach(function(file){ %>
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                <%= file %>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                
+                                                                <button type="button" onclick="showChart(this)" data-file=<%=file%> class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                                                    <i class="fas fa-pencil-alt"></i>
+                                                                </button>
+                                                                
+                                                            </td>
+                                                        </tr>
+                                                        <% }) %>
+                                                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <canvas id="myChart"></canvas>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button  type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </tbody>
+                                                </table>
+                                                <div>
+                                                    <input type="hidden" name="sort_field" value="">
+                                                    <input type="hidden" name="sort_order" value="">
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="card-footer clearfix">
+                                            <ul class="pagination pagination-sm m-0 float-right">
+                                                <li class="page-item disabled"><a href="" class="page-link"><i
+                                                            class="fas fa-angle-double-left"></i></a></li>
+                                                <li class="page-item disabled"><a href="" class="page-link"><i class="fas fa-angle-left"></i></a>
+                                                </li>
+                                                <li class="page-item active"><a class="page-link">1</a></li>
+                                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                                <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+                                                <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-double-right"></i></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+            </div>
+                <!-- /.content-wrapper -->
+                <%- include ('./../theme/html/footer'); %>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- script -->
+    <%- include ('./../theme/html/script'); %>
+        <script>
+        function makedatachart(t, y) {
+            return {
+                t: t,
+                y: y
+            }
+        }
+        function showChart(element){
+            var file = element.getAttribute("data-file");
+            console.log(element);
+            axios.get("http://localhost:3000/static/file/temp-humid/"+file)
+                .then(res => {
+                    temp = res.data.split('\n')
+                    temp.pop();
+                    all = temp;
+                    return temp.map(x => JSON.parse(x))
+                })
+                .then(res => {
+                    return res.map(x => makedatachart(new Date(x.time), x.data.split('-')[0]));
+                })
+                .then(res => {
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'First dataset',
+                                data: res
+                            }],
+                        },
+                        options: {
+                            title: {
+                                display: true,
+                                text: file,
+                            },
+                            animation: false,
+                            elements: {
+                                point: {
+                                    radius: 0
+                                }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    type: 'time',
+                                    distribution: 'series',
+                                    time: {
+                                        displayFormats: {
+
+                                            quarter: 'MMM YYYY'
+                                        }
+                                    }
+                                }],
+                                yAxes: [{
+                                    // stacked:true,
+                                    ticks: {
+                                        min: 0,
+                                        max: 60,
+                                    }
+                                }]
+                            }
+
+                        }
+                    });
+
+                });
+        }
+            $(document).ready(function () {
+                all = []
+                
+                // axios.get("http://localhost:3000/static/file/temp-humid/6-5-2021.txt")
+                //     .then(res => {
+                //         temp = res.data.split('\n')
+                //         temp.pop();
+                //         all = temp;
+                //         return temp.map(x => JSON.parse(x))
+                //     })
+                //     .then(res => {
+                //         return res.map(x => makedatachart(new Date(x.time), x.data.split('-')[0]));
+                //     })
+                //     .then(res => {
+                //         var ctx = document.getElementById('myChart').getContext('2d');
+                //         var myChart = new Chart(ctx, {
+                //             type: 'line',
+                //             data: {
+                //                 datasets: [{
+                //                     label: 'First dataset',
+                //                     data: res
+                //                 }],
+                //             },
+                //             options: {
+                //                 animation: false,
+                //                 elements: {
+                //                     point: {
+                //                         radius: 0
+                //                     }
+                //                 },
+                //                 scales: {
+                //                     xAxes: [{
+                //                         type: 'time',
+                //                         distribution: 'series',
+                //                         time: {
+                //                             displayFormats: {
+
+                //                                 quarter: 'MMM YYYY'
+                //                             }
+                //                         }
+                //                     }],
+                //                     yAxes: [{
+                //                         // stacked:true,
+                //                         ticks: {
+                //                             min: 0,
+                //                             max: 60,
+                //                         }
+                //                     }]
+                //                 }
+
+                //             }
+                //         });
+
+                //     });
+            });
+            let test = [];
+            var socket = io.connect('http://localhost:3000')
+            function doDRV(drvdata) {
+                console.log('info-drv demand change', drvdata.value);
+                socket.emit('info-drv', drvdata.value)
+            }
+            function doSwitch(switchdata) {
+                if (switchdata.checked == true) {
+                    socket.emit('info-drv', 255)
+                }
+                else {
+                    socket.emit('info-drv', 0)
+                }
+            }
+        </script>
+</body>
+
+</html>
