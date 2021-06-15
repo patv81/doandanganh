@@ -21,10 +21,28 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="log" class="nav-link active" data-active="index">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-list-ul"></i>
-                        <p>Log file</p>
+                        <p>
+                            Log
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview"
+                        style="display: none; height: 86px; padding-top: 0px; margin-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
+                        <li class="nav-item">
+                            <a href="/log/temp-humid" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Temp-humid</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/log/drv" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>DRV</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
@@ -33,7 +51,7 @@
                         <p>Control</p>
                     </a>
                 </li>
-                </li>
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
