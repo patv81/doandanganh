@@ -85,6 +85,7 @@ function getInit(){
 
 var server = app.listen(port, function () {
     console.log("helloworld")
+    // let file = current.toLocaleDateString('vn-VN').replace(/\//g, '-')+'.txt';
     getInit();
 })
 
@@ -121,7 +122,7 @@ const client = mqtt.connect("mqtt://io.adafruit.com", {
     protocolVersion: 3,
     clientId: 'my-device',
     username: 'ligemos',
-    password: ''
+    password: process.env.KEY,
 })
 // http://dadn.esp32thanhdanh.link/
 // const client = mqtt.connect("mqtt://io.adafruit.com", {
