@@ -66,12 +66,17 @@
                                                             <td class="text-center">
                                                                 <%= file %>
                                                             </td>
-                                                            <td class="text-center">
+                                                            <td class="text-center d-flex justify-content-around">
                                                                 
-                                                                <button type="button" onclick="showChart(this)" data-file=<%=file%> class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                                                                    <i class="fas fa-pencil-alt"></i>
+                                                                <button  my-type-data="temp" type="button"  onclick="showChart(this)" data-file=<%=file %> class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                                                    <i data-toggle="tooltip" data-placement="bottom" title="View temperature" class="fas fa-pencil-alt"></i>
                                                                 </button>
-                                                                
+                                                                <button  my-type-data="humid" type="button" onclick="showChart(this)" data-file=<%=file %> class="btn btn-primary" data-toggle="modal"
+                                                                    data-target="#exampleModal">
+                                                                    <i data-toggle="tooltip" data-placement="bottom" title="View humid" class="fas fa-pencil-alt"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="View file log">
+                                                                    View source </button>
                                                             </td>
                                                         </tr>
                                                         <% }) %>
@@ -128,6 +133,7 @@
     <!-- script -->
     <%- include ('./../theme/html/script'); %>
         <script>
+        var f ;
         function makedatachart(t, y) {
             return {
                 t: t,
@@ -135,8 +141,12 @@
             }
         }
         function showChart(element){
+            
             var file = element.getAttribute("data-file");
-            console.log(element);
+            var chosetype = element.getAttribute("my-type-data")=="humid"?1:0;
+            f = element;
+            console.log(element,chosetype);
+
             axios.get("http://localhost:3000/static/file/temp-humid/"+file)
                 .then(res => {
                     temp = res.data.split('\n')
@@ -145,7 +155,7 @@
                     return temp.map(x => JSON.parse(x))
                 })
                 .then(res => {
-                    return res.map(x => makedatachart(new Date(x.time), x.data.split('-')[0]));
+                    return res.map(x => makedatachart(new Date(x.time), x.data.split('-')[chosetype]));
                 })
                 .then(res => {
                     var ctx = document.getElementById('myChart').getContext('2d');
@@ -183,7 +193,7 @@
                                     // stacked:true,
                                     ticks: {
                                         min: 0,
-                                        max: 60,
+                                        max: chosetype==0?60:100,
                                     }
                                 }]
                             }
@@ -262,6 +272,9 @@
                     socket.emit('info-drv', 0)
                 }
             }
+            $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
         </script>
 </body>
 

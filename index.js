@@ -104,12 +104,15 @@ app.get('/', function (req, res) {
 app.get('/t2', function (req, res) {
     res.render('user/t2')
 })
-// const client = mqtt.connect("mqtt://io.adafruit.com", {
-//     protocolVersion: 3,
-//     clientId: 'my-device',
-//     username: 'ligemos',
-//     password: 'aio_YbXH25fQ0lFQjdrzpfWLEJRNf5Jn'
-// })
+app.get('/control', function (req, res) {
+    res.render('user/control')
+})
+const client = mqtt.connect("mqtt://io.adafruit.com", {
+    protocolVersion: 3,
+    clientId: 'my-device',
+    username: 'ligemos',
+    password: 'aio_REnO87Vo6ropsnPNUUZRhMIgRaK0'
+})
 // http://dadn.esp32thanhdanh.link/
 // const client = mqtt.connect("mqtt://io.adafruit.com", {
 //     protocolVersion: 3,
@@ -149,62 +152,62 @@ io.on('connection', function (socket) {
 
 
 
-// client.subscribe('ligemos/feeds/test', function (err) {
-//     if (err) {
-//         console.log(err)
-//     }
-// })
-// client.subscribe('ligemos/feeds/bk-iot-drv', function (err) {
-//     if (err) {
-//         console.log(err)
-//     }
-// })
+client.subscribe('ligemos/feeds/test', function (err) {
+    if (err) {
+        console.log(err)
+    }
+})
+client.subscribe('ligemos/feeds/bk-iot-drv', function (err) {
+    if (err) {
+        console.log(err)
+    }
+})
 
-// client.on('connect', function () {
-// })
+client.on('connect', function () {
+})
 
-// client.on('message', function (topic, message) {
-//     // message is Buffer
-//     let data = message.toString();
-//     if (topic == "ligemos/feeds/test") {
+client.on('message', function (topic, message) {
+    // message is Buffer
+    let data = message.toString();
+    if (topic == "ligemos/feeds/test") {
 
-//         let time = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
-//         io.emit('info-temp-humid', { data: data, time: time });
+        let time = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+        io.emit('info-temp-humid', { data: data, time: time });
 
-//         let url = path.join(__dirname, 'static', 'file', 'temp-humid', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
-//         data = JSON.parse(data);
-//         data.time = time
-//         fs.appendFile(url, JSON.stringify(data) + '\n', function (err) {
-//             if (err) throw err;
-//             console.log('Saved!');
-//         });
-//     }
-//     else if (topic == "ligemos/feeds/bk-iot-drv") {
-//         console.log("data", data);
-//         let time = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
-//         io.emit('front-end-info-drv', { data: data, time: time });
-//         let url = path.join(__dirname, 'static', 'file', 'drv', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
-//         data = JSON.parse(data);
-//         data.time = time
-//         fs.appendFile(url, JSON.stringify(data) + '\n', function (err) {
-//             if (err) throw err;
-//             console.log('Saved drv!');
-//         });
-//     }
+        let url = path.join(__dirname, 'static', 'file', 'temp-humid', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
+        data = JSON.parse(data);
+        data.time = time
+        fs.appendFile(url, JSON.stringify(data) + '\n', function (err) {
+            if (err) throw err;
+            console.log('Saved!');
+        });
+    }
+    else if (topic == "ligemos/feeds/bk-iot-drv") {
+        console.log("data", data);
+        let time = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+        io.emit('front-end-info-drv', { data: data, time: time });
+        let url = path.join(__dirname, 'static', 'file', 'drv', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
+        data = JSON.parse(data);
+        data.time = time
+        fs.appendFile(url, JSON.stringify(data) + '\n', function (err) {
+            if (err) throw err;
+            console.log('Saved drv!');
+        });
+    }
 
-// })
+})
 
-// client.on("error", function (error) {
-//     console.log("ERROR: ", error);
-// });
+client.on("error", function (error) {
+    console.log("ERROR: ", error);
+});
 
-// client.on('offline', function () {
-//     console.log("offline");
-// });
+client.on('offline', function () {
+    console.log("offline");
+});
 
-// client.on('reconnect', function () {
-//     console.log("reconnect");
-// });
+client.on('reconnect', function () {
+    console.log("reconnect");
+});
 
 
 // ////////////////////////////////////////////////////////
