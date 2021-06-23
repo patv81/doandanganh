@@ -12,10 +12,11 @@ app.use("/static", express.static(__dirname + "/static"));
 app.set("view engine", "ejs");
 
 const mqtt = require('mqtt');
-const current = new Date()
+let current = new Date()
 var init = {}
 
 function getInit(){
+    current = new Date()
     let urlTempHumid = path.join(__dirname, 'static', 'file', 'temp-humid', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
     let urlTempHumidfol = path.join(__dirname, 'static', 'file', 'temp-humid')
     let urlDRV = path.join(__dirname, 'static', 'file', 'drv', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
@@ -179,6 +180,7 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
     // message is Buffer
+    current = new Date()
     let data = message.toString();
     if (topic == "ligemos/feeds/test") {
 
@@ -186,6 +188,7 @@ client.on('message', function (topic, message) {
         io.emit('info-temp-humid', { data: data, time: time });
 
         let url = path.join(__dirname, 'static', 'file', 'temp-humid', current.toLocaleDateString('vn-VN').replace(/\//g, '-') + '.txt');
+        console.log("url",url)
         data = JSON.parse(data);
         data.time = time
         fs.appendFile(url, JSON.stringify(data) + '\n', function (err) {
